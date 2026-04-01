@@ -1,0 +1,7 @@
+name: site-monitor-hub
+type: php
+docroot: public
+php_version: "8.2"
+webserver_type: nginx-fpm
+database:
+  type: ""

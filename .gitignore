@@ -14,5 +14,9 @@ data/*.sqlite
 .idea/
 .vscode/
 
+# DDEV (keep config.yaml)
+.ddev/*
+!.ddev/config.yaml
+
 # OS
 .DS_Store
