@@ -1,0 +1,196 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"title": "Site Monitor Hub - Report Payload",
+	"description": "JSON Schema for the POST /report request body.",
+	"type": "object",
+	"required": ["schema_version", "timestamp", "site_url", "environment"],
+	"properties": {
+		"schema_version": {
+			"type": "integer",
+			"minimum": 1,
+			"description": "Schema version of this payload."
+		},
+		"timestamp": {
+			"type": "string",
+			"format": "date-time",
+			"description": "ISO 8601 timestamp of when the report was generated."
+		},
+		"site_url": {
+			"type": "string",
+			"format": "uri",
+			"description": "The URL of the WordPress site."
+		},
+		"environment": {
+			"type": "object",
+			"properties": {
+				"wp_version": {
+					"type": "string",
+					"description": "Current WordPress version."
+				},
+				"php_version": {
+					"type": "string",
+					"description": "Current PHP version."
+				},
+				"wp_update_available": {
+					"type": ["string", "null"],
+					"description": "Available WordPress update version, or null if up to date."
+				}
+			},
+			"additionalProperties": true
+		},
+		"plugins": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"required": ["slug", "name", "version"],
+				"properties": {
+					"slug": {
+						"type": "string",
+						"description": "Plugin slug."
+					},
+					"name": {
+						"type": "string",
+						"description": "Plugin display name."
+					},
+					"version": {
+						"type": "string",
+						"description": "Currently installed version."
+					},
+					"update_available": {
+						"type": ["string", "null"],
+						"description": "Available update version, or null."
+					},
+					"active": {
+						"type": "boolean",
+						"description": "Whether the plugin is active."
+					}
+				},
+				"additionalProperties": true
+			}
+		},
+		"themes": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"required": ["slug", "name", "version"],
+				"properties": {
+					"slug": {
+						"type": "string",
+						"description": "Theme slug."
+					},
+					"name": {
+						"type": "string",
+						"description": "Theme display name."
+					},
+					"version": {
+						"type": "string",
+						"description": "Currently installed version."
+					},
+					"update_available": {
+						"type": ["string", "null"],
+						"description": "Available update version, or null."
+					},
+					"active": {
+						"type": "boolean",
+						"description": "Whether the theme is the active theme."
+					}
+				},
+				"additionalProperties": true
+			}
+		},
+		"custom_fields": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"required": ["key", "label", "value"],
+				"properties": {
+					"key": {
+						"type": "string",
+						"description": "Machine-readable key."
+					},
+					"label": {
+						"type": "string",
+						"description": "Human-readable label."
+					},
+					"value": {
+						"type": "string",
+						"description": "Field value."
+					},
+					"status": {
+						"type": ["string", "null"],
+						"description": "Optional status indicator (e.g. ok, warning, error)."
+					}
+				},
+				"additionalProperties": true
+			}
+		},
+		"users": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"required": ["user_login", "display_name", "email", "role"],
+				"properties": {
+					"user_login": {
+						"type": "string",
+						"description": "WordPress username."
+					},
+					"display_name": {
+						"type": "string",
+						"description": "Display name."
+					},
+					"email": {
+						"type": "string",
+						"format": "email",
+						"description": "User email address."
+					},
+					"role": {
+						"type": "string",
+						"description": "Primary user role slug."
+					},
+					"meta": {
+						"type": "object",
+						"description": "Key-value pairs of user meta data.",
+						"additionalProperties": {
+							"type": "string"
+						}
+					}
+				},
+				"additionalProperties": true
+			}
+		},
+		"roles": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"required": ["slug", "name", "capabilities"],
+				"properties": {
+					"slug": {
+						"type": "string",
+						"description": "Role slug."
+					},
+					"name": {
+						"type": "string",
+						"description": "Role display name."
+					},
+					"is_custom": {
+						"type": "boolean",
+						"description": "Whether this is a custom (non-default WP) role."
+					},
+					"is_modified": {
+						"type": "boolean",
+						"description": "Whether this role has modified capabilities."
+					},
+					"capabilities": {
+						"type": "object",
+						"description": "Map of capability names to boolean values.",
+						"additionalProperties": {
+							"type": "boolean"
+						}
+					}
+				},
+				"additionalProperties": true
+			}
+		}
+	},
+	"additionalProperties": true
+}
