@@ -57,8 +57,41 @@ class ThemesHandler {
 		$slug = $_GET['slug'] ?? null;
 		$outdated = isset( $_GET['outdated'] ) && $_GET['outdated'] === 'true';
 
-		$themes = $this->repo->getAllThemes( $slug, $outdated );
+		$rows = $this->repo->getAllThemes( $slug, $outdated );
 
-		JsonResponse::send( $themes );
+		JsonResponse::send( [ 'themes' => self::groupBySlug( $rows ) ] );
+	}
+
+	/**
+	 * Group flat theme rows by slug with nested sites array.
+	 *
+	 * @param array<int, array<string, mixed>> $rows Flat rows.
+	 *
+	 * @return array<int, array<string, mixed>>
+	 */
+	private static function groupBySlug( array $rows ): array {
+		$grouped = [];
+
+		foreach ( $rows as $row ) {
+			$slug = $row['slug'];
+			if ( ! isset( $grouped[ $slug ] ) ) {
+				$grouped[ $slug ] = [
+					'slug' => $slug,
+					'name' => $row['name'],
+					'sites' => [],
+				];
+			}
+
+			$grouped[ $slug ]['sites'][] = [
+				'site_id' => $row['site_id'],
+				'site_url' => $row['site_url'],
+				'version' => $row['version'],
+				'update_available' => $row['update_available'],
+				'active' => $row['active'],
+				'last_updated' => $row['last_updated'],
+			];
+		}
+
+		return \array_values( $grouped );
 	}
 }

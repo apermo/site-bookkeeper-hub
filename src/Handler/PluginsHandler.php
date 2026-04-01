@@ -57,8 +57,41 @@ class PluginsHandler {
 		$slug = $_GET['slug'] ?? null;
 		$outdated = isset( $_GET['outdated'] ) && $_GET['outdated'] === 'true';
 
-		$plugins = $this->repo->getAllPlugins( $slug, $outdated );
+		$rows = $this->repo->getAllPlugins( $slug, $outdated );
 
-		JsonResponse::send( $plugins );
+		JsonResponse::send( [ 'plugins' => self::groupBySlug( $rows ) ] );
+	}
+
+	/**
+	 * Group flat plugin rows by slug with nested sites array.
+	 *
+	 * @param array<int, array<string, mixed>> $rows Flat rows.
+	 *
+	 * @return array<int, array<string, mixed>>
+	 */
+	private static function groupBySlug( array $rows ): array {
+		$grouped = [];
+
+		foreach ( $rows as $row ) {
+			$slug = $row['slug'];
+			if ( ! isset( $grouped[ $slug ] ) ) {
+				$grouped[ $slug ] = [
+					'slug' => $slug,
+					'name' => $row['name'],
+					'sites' => [],
+				];
+			}
+
+			$grouped[ $slug ]['sites'][] = [
+				'site_id' => $row['site_id'],
+				'site_url' => $row['site_url'],
+				'version' => $row['version'],
+				'update_available' => $row['update_available'],
+				'active' => $row['active'],
+				'last_updated' => $row['last_updated'],
+			];
+		}
+
+		return \array_values( $grouped );
 	}
 }

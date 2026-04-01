@@ -72,7 +72,7 @@ class SitesHandler {
 			$result[] = $this->buildSiteSummary( $site, $staleThreshold );
 		}
 
-		JsonResponse::send( $result );
+		JsonResponse::send( [ 'sites' => $result ] );
 	}
 
 	/**
