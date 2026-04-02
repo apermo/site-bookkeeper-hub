@@ -20,6 +20,7 @@ use Apermo\SiteBookkeeperHub\Handler\ReportHandler;
 use Apermo\SiteBookkeeperHub\Handler\SiteHandler;
 use Apermo\SiteBookkeeperHub\Handler\SitesHandler;
 use Apermo\SiteBookkeeperHub\Handler\ThemesHandler;
+use Apermo\SiteBookkeeperHub\Middleware\HttpsGuard;
 use Apermo\SiteBookkeeperHub\Router;
 use Apermo\SiteBookkeeperHub\Storage\Database;
 use Apermo\SiteBookkeeperHub\Storage\NetworkRepository;
@@ -36,6 +37,11 @@ if ( file_exists( $env_file ) ) {
 		}
 		putenv( $line );
 	}
+}
+
+// Reject plain HTTP requests unless ALLOW_HTTP=true is set.
+if ( ! HttpsGuard::check( $_SERVER ) ) {
+	exit();
 }
 
 $database_path = getenv( 'DATABASE_PATH' ) ?: __DIR__ . '/../data/monitor.sqlite';

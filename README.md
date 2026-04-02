@@ -33,6 +33,14 @@ Edit `.env` to customize:
 |---|---|---|
 | `DATABASE_PATH` | `./data/monitor.sqlite` | Path to the SQLite database file |
 | `STALE_THRESHOLD_HOURS` | `48` | Hours before a site is marked as stale |
+| `ALLOW_HTTP` | *(unset)* | Set to `true` to allow plain HTTP (local dev only) |
+
+### HTTPS Requirement
+
+All API requests must be made over HTTPS. Plain HTTP requests receive a `403` response. Behind a reverse proxy the
+`X-Forwarded-Proto` header is respected.
+
+For local development (e.g. DDEV), set `ALLOW_HTTP=true` in your `.env` to disable the check.
 
 ## Site Management
 
