@@ -664,7 +664,9 @@ class SiteRepository {
 					':user_login' => $user['user_login'] ?? '',
 					':display_name' => $user['display_name'] ?? '',
 					':email' => $user['email'] ?? '',
-					':role' => $user['role'] ?? '',
+					':role' => \is_array( $user['roles'] ?? null )
+					? \implode( ', ', $user['roles'] )
+					: (string) ( $user['role'] ?? '' ),
 				],
 			);
 
