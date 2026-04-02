@@ -43,6 +43,18 @@ class Router {
 	}
 
 	/**
+	 * Register a DELETE route.
+	 *
+	 * @param string   $pattern  Route pattern.
+	 * @param callable $handler  Handler callback.
+	 *
+	 * @return void
+	 */
+	public function delete( string $pattern, callable $handler ): void {
+		$this->routes['DELETE'][ $pattern ] = $handler;
+	}
+
+	/**
 	 * Dispatch the current request to a matching handler.
 	 *
 	 * @param string $method HTTP method (GET, POST, etc.).

@@ -112,6 +112,33 @@ class SiteRepository {
 	}
 
 	/**
+	 * Delete a site and all its related data.
+	 *
+	 * @param string $site_id Site UUID.
+	 *
+	 * @return void
+	 */
+	public function deleteSite( string $site_id ): void {
+		$pdo = $this->database->pdo();
+		$tables = [
+			'site_user_meta',
+			'site_users',
+			'site_roles',
+			'site_custom_fields',
+			'site_themes',
+			'site_plugins',
+			'reports',
+			'sites',
+		];
+
+		foreach ( $tables as $table ) {
+			$column = $table === 'sites' ? 'id' : 'site_id';
+			$stmt = $pdo->prepare( "DELETE FROM {$table} WHERE {$column} = :id" );
+			$stmt->execute( [ ':id' => $site_id ] );
+		}
+	}
+
+	/**
 	 * Get all sites.
 	 *
 	 * @return array<int, Site>
