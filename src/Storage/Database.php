@@ -68,6 +68,12 @@ class Database {
 			$this->createSiteUsersTable();
 			$this->createSiteUserMetaTable();
 			$this->createSiteRolesTable();
+			$this->createNetworksTable();
+			$this->createNetworkReportsTable();
+			$this->createNetworkPluginsTable();
+			$this->createNetworkUsersTable();
+			$this->migrateSitesAddNetworkId();
+			$this->migrateSitePluginsAddNetworkActive();
 
 			$this->connection->commit();
 		} catch ( Throwable $exception ) {
@@ -245,5 +251,111 @@ class Database {
 				PRIMARY KEY (site_id, slug)
 			)',
 		);
+	}
+
+	/**
+	 * Create the networks table.
+	 *
+	 * @return void
+	 */
+	private function createNetworksTable(): void {
+		$this->connection->exec(
+			'CREATE TABLE IF NOT EXISTS networks (
+				id TEXT PRIMARY KEY,
+				main_site_url TEXT NOT NULL UNIQUE,
+				token_hash TEXT NOT NULL,
+				label TEXT,
+				created_at TEXT NOT NULL,
+				updated_at TEXT NOT NULL
+			)',
+		);
+	}
+
+	/**
+	 * Create the network_reports table.
+	 *
+	 * @return void
+	 */
+	private function createNetworkReportsTable(): void {
+		$this->connection->exec(
+			'CREATE TABLE IF NOT EXISTS network_reports (
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
+				network_id TEXT NOT NULL REFERENCES networks(id),
+				received_at TEXT NOT NULL,
+				schema_version INTEGER NOT NULL,
+				payload JSON NOT NULL,
+				subsite_count INTEGER,
+				last_updated TEXT,
+				UNIQUE(network_id)
+			)',
+		);
+	}
+
+	/**
+	 * Create the network_plugins table.
+	 *
+	 * @return void
+	 */
+	private function createNetworkPluginsTable(): void {
+		$this->connection->exec(
+			'CREATE TABLE IF NOT EXISTS network_plugins (
+				network_id TEXT NOT NULL REFERENCES networks(id),
+				slug TEXT NOT NULL,
+				name TEXT NOT NULL,
+				version TEXT NOT NULL,
+				update_available TEXT,
+				last_updated TEXT NOT NULL,
+				PRIMARY KEY (network_id, slug)
+			)',
+		);
+	}
+
+	/**
+	 * Create the network_users table.
+	 *
+	 * @return void
+	 */
+	private function createNetworkUsersTable(): void {
+		$this->connection->exec(
+			'CREATE TABLE IF NOT EXISTS network_users (
+				network_id TEXT NOT NULL REFERENCES networks(id),
+				user_login TEXT NOT NULL,
+				display_name TEXT NOT NULL,
+				email TEXT NOT NULL,
+				PRIMARY KEY (network_id, user_login)
+			)',
+		);
+	}
+
+	/**
+	 * Add network_id column to sites table.
+	 *
+	 * @return void
+	 */
+	private function migrateSitesAddNetworkId(): void {
+		try {
+			$this->connection->exec(
+				'ALTER TABLE sites ADD COLUMN network_id TEXT REFERENCES networks(id)',
+			);
+			// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch -- Expected when column already exists.
+		} catch ( Throwable $exception ) {
+			// Column already exists — safe to ignore.
+		}
+	}
+
+	/**
+	 * Add network_active column to site_plugins table.
+	 *
+	 * @return void
+	 */
+	private function migrateSitePluginsAddNetworkActive(): void {
+		try {
+			$this->connection->exec(
+				'ALTER TABLE site_plugins ADD COLUMN network_active INTEGER NOT NULL DEFAULT 0',
+			);
+			// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch -- Expected when column already exists.
+		} catch ( Throwable $exception ) {
+			// Column already exists — safe to ignore.
+		}
 	}
 }

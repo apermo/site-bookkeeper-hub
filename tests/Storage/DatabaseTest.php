@@ -35,6 +35,10 @@ class DatabaseTest extends TestCase {
 			'site_users',
 			'site_user_meta',
 			'site_roles',
+			'networks',
+			'network_reports',
+			'network_plugins',
+			'network_users',
 		];
 
 		$stmt   = $db->pdo()->query( "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name" );
@@ -67,5 +71,25 @@ class DatabaseTest extends TestCase {
 	public function testPdoReturnsConnection(): void {
 		$db = new Database( $this->dbPath );
 		$this->assertInstanceOf( \PDO::class, $db->pdo() );
+	}
+
+	public function testSitesTableHasNetworkIdColumn(): void {
+		$db = new Database( $this->dbPath );
+		$db->migrate();
+
+		$stmt = $db->pdo()->query( 'PRAGMA table_info(sites)' );
+		$columns = $stmt->fetchAll( \PDO::FETCH_COLUMN, 1 );
+
+		$this->assertContains( 'network_id', $columns );
+	}
+
+	public function testSitePluginsTableHasNetworkActiveColumn(): void {
+		$db = new Database( $this->dbPath );
+		$db->migrate();
+
+		$stmt = $db->pdo()->query( 'PRAGMA table_info(site_plugins)' );
+		$columns = $stmt->fetchAll( \PDO::FETCH_COLUMN, 1 );
+
+		$this->assertContains( 'network_active', $columns );
 	}
 }

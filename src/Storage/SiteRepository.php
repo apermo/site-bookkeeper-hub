@@ -30,6 +30,19 @@ class SiteRepository {
 	}
 
 	/**
+	 * Generate a v4 UUID.
+	 *
+	 * @return string
+	 */
+	private static function generateUuid(): string {
+		$data = \random_bytes( 16 );
+		$data[6] = \chr( \ord( $data[6] ) & 0x0f | 0x40 );
+		$data[8] = \chr( \ord( $data[8] ) & 0x3f | 0x80 );
+
+		return \vsprintf( '%s%s-%s-%s-%s-%s%s%s', \str_split( \bin2hex( $data ), 4 ) );
+	}
+
+	/**
 	 * Return the underlying PDO connection.
 	 *
 	 * @return PDO
@@ -355,6 +368,63 @@ class SiteRepository {
 		);
 
 		return (int) $this->database->pdo()->lastInsertId();
+	}
+
+	/**
+	 * Find or create a site belonging to a network.
+	 *
+	 * Looks up by URL first. If not found, creates a new site
+	 * with the network_id set.
+	 *
+	 * @param string $networkId Network UUID.
+	 * @param string $siteUrl   Site URL.
+	 * @param string $tokenHash Argon2id token hash for new sites.
+	 *
+	 * @return Site
+	 */
+	public function findOrCreateSiteForNetwork( string $networkId, string $siteUrl, string $tokenHash ): Site {
+		$existing = $this->findSiteByUrl( $siteUrl );
+		if ( $existing !== null ) {
+			return $existing;
+		}
+
+		$timestamp = \gmdate( 'Y-m-d\TH:i:s\Z' );
+		$id = self::generateUuid();
+
+		$stmt = $this->database->pdo()->prepare(
+			'INSERT INTO sites (id, site_url, token_hash, label, network_id, created_at, updated_at)
+			 VALUES (:id, :site_url, :token_hash, :label, :network_id, :created_at, :updated_at)',
+		);
+		$stmt->execute(
+			[
+				':id' => $id,
+				':site_url' => $siteUrl,
+				':token_hash' => $tokenHash,
+				':label' => null,
+				':network_id' => $networkId,
+				':created_at' => $timestamp,
+				':updated_at' => $timestamp,
+			],
+		);
+
+		return new Site( $id, $siteUrl, $tokenHash, null, $timestamp, $timestamp );
+	}
+
+	/**
+	 * Get all sites belonging to a network.
+	 *
+	 * @param string $networkId Network UUID.
+	 *
+	 * @return array<int, Site>
+	 */
+	public function getSitesByNetworkId( string $networkId ): array {
+		$stmt = $this->database->pdo()->prepare(
+			'SELECT * FROM sites WHERE network_id = :network_id ORDER BY site_url',
+		);
+		$stmt->execute( [ ':network_id' => $networkId ] );
+		$rows = $stmt->fetchAll();
+
+		return \array_map( [ Site::class, 'fromRow' ], $rows );
 	}
 
 	/**
