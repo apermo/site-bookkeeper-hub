@@ -62,6 +62,7 @@ class PluginsHandler {
 			$grouped[ $slug ]['sites'][] = [
 				'site_id' => $row['site_id'],
 				'site_url' => $row['site_url'],
+				'label' => $row['site_label'] ?? null,
 				'version' => $row['version'],
 				'update_available' => $row['update_available'],
 				'active' => $row['active'],
