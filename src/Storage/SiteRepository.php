@@ -250,6 +250,22 @@ class SiteRepository {
 	}
 
 	/**
+	 * Get all users across all sites.
+	 *
+	 * @return array<int, array<string, mixed>>
+	 */
+	public function getAllUsers(): array {
+		$stmt = $this->database->pdo()->query(
+			'SELECT su.*, s.site_url, s.label AS site_label
+			FROM site_users su
+			JOIN sites s ON su.site_id = s.id
+			ORDER BY su.email, su.user_login, s.site_url',
+		);
+
+		return $stmt->fetchAll();
+	}
+
+	/**
 	 * Search users across all sites by login, email, or display name.
 	 *
 	 * @param string $query Search term.

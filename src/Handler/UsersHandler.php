@@ -55,12 +55,9 @@ class UsersHandler {
 		}
 
 		$search = $_GET['search'] ?? '';
-		if ( $search === '' ) {
-			JsonResponse::error( 'bad_request', 'Missing search parameter.', 400 );
-			return;
-		}
-
-		$rows = $this->repo->searchUsers( $search );
+		$rows = $search !== ''
+			? $this->repo->searchUsers( $search )
+			: $this->repo->getAllUsers();
 
 		JsonResponse::send( [ 'users' => $this->groupByUser( $rows ) ] );
 	}
