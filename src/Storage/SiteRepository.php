@@ -250,6 +250,35 @@ class SiteRepository {
 	}
 
 	/**
+	 * Search users across all sites by login, email, or display name.
+	 *
+	 * @param string $query Search term.
+	 *
+	 * @return array<int, array<string, mixed>>
+	 */
+	public function searchUsers( string $query ): array {
+		$like = '%' . $query . '%';
+		$stmt = $this->database->pdo()->prepare(
+			'SELECT su.*, s.site_url, s.label AS site_label
+			FROM site_users su
+			JOIN sites s ON su.site_id = s.id
+			WHERE su.user_login LIKE :q1
+				OR su.email LIKE :q2
+				OR su.display_name LIKE :q3
+			ORDER BY su.user_login, s.site_url',
+		);
+		$stmt->execute(
+			[
+				':q1' => $like,
+				':q2' => $like,
+				':q3' => $like,
+			],
+		);
+
+		return $stmt->fetchAll();
+	}
+
+	/**
 	 * Get user meta for a specific user on a site.
 	 *
 	 * @param string $siteId    Site UUID.
