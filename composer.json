@@ -11,7 +11,7 @@
 		"dashboard api"
 	],
 	"homepage": "https://github.com/apermo/site-bookkeeper-hub/",
-	"license": "MIT",
+	"license": "GPL-2.0-or-later",
 	"authors": [
 		{
 			"name": "Christoph Daum",
