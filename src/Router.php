@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Apermo\SiteMonitorHub;
+namespace Apermo\SiteBookkeeperHub;
 
 /**
  * Minimal request router.

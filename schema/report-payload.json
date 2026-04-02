@@ -1,6 +1,6 @@
 {
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
-	"title": "Site Monitor Hub - Report Payload",
+	"title": "Site Bookkeeper Hub - Report Payload",
 	"description": "JSON Schema for the POST /report request body.",
 	"type": "object",
 	"required": ["schema_version", "timestamp", "site_url", "environment"],

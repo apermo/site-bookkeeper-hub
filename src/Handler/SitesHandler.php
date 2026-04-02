@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Apermo\SiteMonitorHub\Handler;
+namespace Apermo\SiteBookkeeperHub\Handler;
 
-use Apermo\SiteMonitorHub\Auth\ClientAuth;
-use Apermo\SiteMonitorHub\JsonResponse;
-use Apermo\SiteMonitorHub\Model\Site;
-use Apermo\SiteMonitorHub\Storage\SiteRepository;
+use Apermo\SiteBookkeeperHub\Auth\ClientAuth;
+use Apermo\SiteBookkeeperHub\JsonResponse;
+use Apermo\SiteBookkeeperHub\Model\Site;
+use Apermo\SiteBookkeeperHub\Storage\SiteRepository;
 
 /**
  * Handles GET /sites — returns a summary list of all monitored sites.

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Apermo\SiteMonitorHub\Tests\Handler;
+namespace Apermo\SiteBookkeeperHub\Tests\Handler;
 
-use Apermo\SiteMonitorHub\Model\SiteReport;
-use Apermo\SiteMonitorHub\Tests\TestCase;
+use Apermo\SiteBookkeeperHub\Model\SiteReport;
+use Apermo\SiteBookkeeperHub\Tests\TestCase;
 
 class SiteHandlerTest extends TestCase {
 

@@ -9,16 +9,16 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Apermo\SiteMonitorHub\Auth\ClientAuth;
-use Apermo\SiteMonitorHub\Auth\TokenAuth;
-use Apermo\SiteMonitorHub\Handler\PluginsHandler;
-use Apermo\SiteMonitorHub\Handler\ReportHandler;
-use Apermo\SiteMonitorHub\Handler\SiteHandler;
-use Apermo\SiteMonitorHub\Handler\SitesHandler;
-use Apermo\SiteMonitorHub\Handler\ThemesHandler;
-use Apermo\SiteMonitorHub\Router;
-use Apermo\SiteMonitorHub\Storage\Database;
-use Apermo\SiteMonitorHub\Storage\SiteRepository;
+use Apermo\SiteBookkeeperHub\Auth\ClientAuth;
+use Apermo\SiteBookkeeperHub\Auth\TokenAuth;
+use Apermo\SiteBookkeeperHub\Handler\PluginsHandler;
+use Apermo\SiteBookkeeperHub\Handler\ReportHandler;
+use Apermo\SiteBookkeeperHub\Handler\SiteHandler;
+use Apermo\SiteBookkeeperHub\Handler\SitesHandler;
+use Apermo\SiteBookkeeperHub\Handler\ThemesHandler;
+use Apermo\SiteBookkeeperHub\Router;
+use Apermo\SiteBookkeeperHub\Storage\Database;
+use Apermo\SiteBookkeeperHub\Storage\SiteRepository;
 
 // Load .env if it exists.
 $env_file = __DIR__ . '/../.env';

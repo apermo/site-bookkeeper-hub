@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Apermo\SiteMonitorHub\Auth;
+namespace Apermo\SiteBookkeeperHub\Auth;
 
-use Apermo\SiteMonitorHub\Storage\Database;
+use Apermo\SiteBookkeeperHub\Storage\Database;
 
 /**
  * Validates bearer tokens for read-only API clients.

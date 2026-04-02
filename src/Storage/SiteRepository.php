@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Apermo\SiteMonitorHub\Storage;
+namespace Apermo\SiteBookkeeperHub\Storage;
 
-use Apermo\SiteMonitorHub\Model\Site;
-use Apermo\SiteMonitorHub\Model\SiteReport;
+use Apermo\SiteBookkeeperHub\Model\Site;
+use Apermo\SiteBookkeeperHub\Model\SiteReport;
 use PDO;
 
 /**

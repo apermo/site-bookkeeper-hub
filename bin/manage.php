@@ -1,6 +1,6 @@
 <?php
 /**
- * CLI management tool for Site Monitor Hub.
+ * CLI management tool for Site Bookkeeper Hub.
  *
  * Commands:
  *   site:add <url> [--label=<label>]    Register a new site
@@ -15,8 +15,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Apermo\SiteMonitorHub\Storage\Database;
-use Apermo\SiteMonitorHub\Storage\SiteRepository;
+use Apermo\SiteBookkeeperHub\Storage\Database;
+use Apermo\SiteBookkeeperHub\Storage\SiteRepository;
 
 // Load .env if it exists.
 $env_file = __DIR__ . '/../.env';

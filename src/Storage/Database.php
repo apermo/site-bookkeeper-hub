@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Apermo\SiteMonitorHub\Storage;
+namespace Apermo\SiteBookkeeperHub\Storage;
 
 use PDO;
 use RuntimeException;

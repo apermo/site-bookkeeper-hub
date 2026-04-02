@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Apermo\SiteMonitorHub\Tests;
+namespace Apermo\SiteBookkeeperHub\Tests;
 
-use Apermo\SiteMonitorHub\Storage\Database;
-use Apermo\SiteMonitorHub\Storage\SiteRepository;
+use Apermo\SiteBookkeeperHub\Storage\Database;
+use Apermo\SiteBookkeeperHub\Storage\SiteRepository;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
 /**
@@ -42,7 +42,7 @@ abstract class TestCase extends BaseTestCase {
 	 * @param string      $url   Site URL.
 	 * @param string|null $label Optional label.
 	 *
-	 * @return array{token: string, site: \Apermo\SiteMonitorHub\Model\Site}
+	 * @return array{token: string, site: \Apermo\SiteBookkeeperHub\Model\Site}
 	 */
 	protected function createTestSite( string $url = 'https://example.tld', ?string $label = null ): array {
 		$token = bin2hex( random_bytes( 32 ) );

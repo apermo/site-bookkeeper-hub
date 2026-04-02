@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Apermo\SiteMonitorHub\Handler;
+namespace Apermo\SiteBookkeeperHub\Handler;
 
-use Apermo\SiteMonitorHub\Auth\ClientAuth;
-use Apermo\SiteMonitorHub\JsonResponse;
-use Apermo\SiteMonitorHub\Model\Site;
-use Apermo\SiteMonitorHub\Storage\SiteRepository;
+use Apermo\SiteBookkeeperHub\Auth\ClientAuth;
+use Apermo\SiteBookkeeperHub\JsonResponse;
+use Apermo\SiteBookkeeperHub\Model\Site;
+use Apermo\SiteBookkeeperHub\Storage\SiteRepository;
 
 /**
  * Handles GET /sites/{id} — returns the full report for a single site.
@@ -113,15 +113,15 @@ class SiteHandler {
 	/**
 	 * Build the full response array.
 	 *
-	 * @param \Apermo\SiteMonitorHub\Model\Site $site         Site entity.
-	 * @param array<string, mixed>|null         $report       Report row.
-	 * @param array<int, array<string, mixed>>  $plugins      Plugins.
-	 * @param array<int, array<string, mixed>>  $themes       Themes.
-	 * @param array<int, array<string, mixed>>  $customFields Custom fields.
-	 * @param array<int, array<string, mixed>>  $users        Users with meta.
-	 * @param array<int, array<string, mixed>>  $roles        Roles.
-	 * @param string                            $lastSeen     Last seen timestamp.
-	 * @param bool                              $isStale      Whether site is stale.
+	 * @param \Apermo\SiteBookkeeperHub\Model\Site $site         Site entity.
+	 * @param array<string, mixed>|null            $report       Report row.
+	 * @param array<int, array<string, mixed>>     $plugins      Plugins.
+	 * @param array<int, array<string, mixed>>     $themes       Themes.
+	 * @param array<int, array<string, mixed>>     $customFields Custom fields.
+	 * @param array<int, array<string, mixed>>     $users        Users with meta.
+	 * @param array<int, array<string, mixed>>     $roles        Roles.
+	 * @param string                               $lastSeen     Last seen timestamp.
+	 * @param bool                                 $isStale      Whether site is stale.
 	 *
 	 * @return array<string, mixed>
 	 */

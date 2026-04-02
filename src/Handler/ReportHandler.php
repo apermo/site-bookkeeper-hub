@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Apermo\SiteMonitorHub\Handler;
+namespace Apermo\SiteBookkeeperHub\Handler;
 
-use Apermo\SiteMonitorHub\Auth\TokenAuth;
-use Apermo\SiteMonitorHub\JsonResponse;
-use Apermo\SiteMonitorHub\Model\SiteReport;
-use Apermo\SiteMonitorHub\Storage\SiteRepository;
+use Apermo\SiteBookkeeperHub\Auth\TokenAuth;
+use Apermo\SiteBookkeeperHub\JsonResponse;
+use Apermo\SiteBookkeeperHub\Model\SiteReport;
+use Apermo\SiteBookkeeperHub\Storage\SiteRepository;
 
 /**
  * Handles POST /report — upserts a site health report.

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Apermo\SiteMonitorHub\Tests;
+namespace Apermo\SiteBookkeeperHub\Tests;
 
-use Apermo\SiteMonitorHub\Auth\ClientAuth;
-use Apermo\SiteMonitorHub\Auth\TokenAuth;
+use Apermo\SiteBookkeeperHub\Auth\ClientAuth;
+use Apermo\SiteBookkeeperHub\Auth\TokenAuth;
 
 class CliTest extends TestCase {
 

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Apermo\SiteMonitorHub\Auth;
+namespace Apermo\SiteBookkeeperHub\Auth;
 
-use Apermo\SiteMonitorHub\Model\Site;
-use Apermo\SiteMonitorHub\Storage\Database;
+use Apermo\SiteBookkeeperHub\Model\Site;
+use Apermo\SiteBookkeeperHub\Storage\Database;
 
 /**
  * Validates bearer tokens for sites pushing reports.

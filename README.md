@@ -1,4 +1,4 @@
-# Site Monitor Hub
+# Site Bookkeeper Hub
 
 Standalone PHP API that receives, stores, and serves WordPress site health data. Sites push their status via
 `POST /report`, and clients (dashboards, apps) read aggregated data through authenticated GET endpoints.
@@ -12,8 +12,8 @@ Standalone PHP API that receives, stores, and serves WordPress site health data.
 ## Installation
 
 ```bash
-git clone git@github.com:apermo/site-monitor-hub.git
-cd site-monitor-hub
+git clone git@github.com:apermo/site-bookkeeper-hub.git
+cd site-bookkeeper-hub
 composer install
 cp .env.example .env
 ```

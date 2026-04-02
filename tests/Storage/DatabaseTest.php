@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Apermo\SiteMonitorHub\Tests\Storage;
+namespace Apermo\SiteBookkeeperHub\Tests\Storage;
 
-use Apermo\SiteMonitorHub\Storage\Database;
+use Apermo\SiteBookkeeperHub\Storage\Database;
 use PHPUnit\Framework\TestCase;
 
 class DatabaseTest extends TestCase {

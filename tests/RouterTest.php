@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Apermo\SiteMonitorHub\Tests;
+namespace Apermo\SiteBookkeeperHub\Tests;
 
-use Apermo\SiteMonitorHub\Router;
+use Apermo\SiteBookkeeperHub\Router;
 use PHPUnit\Framework\TestCase;
 
 class RouterTest extends TestCase {

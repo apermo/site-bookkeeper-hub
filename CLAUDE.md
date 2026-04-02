@@ -1,7 +1,7 @@
-# Project: Site Monitor Hub
+# Project: Site Bookkeeper Hub
 
 ## Repository
-- **GitHub**: apermo/site-monitor-hub
+- **GitHub**: apermo/site-bookkeeper-hub
 
 ## Overview
 Standalone PHP API that receives, stores, and serves WordPress site health data. No framework — plain PHP with
@@ -16,7 +16,7 @@ SQLite storage.
 
 ## Project Structure
 - `public/index.php` — Single web entry point
-- `src/` — Application code (PSR-4 namespace `Apermo\SiteMonitorHub`)
+- `src/` — Application code (PSR-4 namespace `Apermo\SiteBookkeeperHub`)
 - `bin/manage.php` — CLI management tool
 - `schema/report-payload.json` — JSON Schema for report validation
 - `tests/` — PHPUnit tests
@@ -32,7 +32,7 @@ SQLite storage.
 - TDD workflow: write test first, verify red, write code, verify green, commit
 
 ## Issue Tracking
-- GitHub Issues on apermo/site-monitor-hub
+- GitHub Issues on apermo/site-bookkeeper-hub
 
 ## Example Domains
 - Always use `.tld` TLD in examples and tests (e.g. `https://example.tld`)

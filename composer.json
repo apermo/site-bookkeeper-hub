@@ -1,5 +1,5 @@
 {
-	"name": "apermo/site-monitor-hub",
+	"name": "apermo/site-bookkeeper-hub",
 	"description": "Standalone PHP API that receives, stores, and serves WordPress site health data.",
 	"keywords": [
 		"wordpress",
@@ -10,7 +10,7 @@
 		"site management",
 		"dashboard api"
 	],
-	"homepage": "https://github.com/apermo/site-monitor-hub/",
+	"homepage": "https://github.com/apermo/site-bookkeeper-hub/",
 	"license": "MIT",
 	"authors": [
 		{
@@ -27,12 +27,12 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"Apermo\\SiteMonitorHub\\": "src/"
+			"Apermo\\SiteBookkeeperHub\\": "src/"
 		}
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"Apermo\\SiteMonitorHub\\Tests\\": "tests/"
+			"Apermo\\SiteBookkeeperHub\\Tests\\": "tests/"
 		}
 	},
 	"require-dev": {

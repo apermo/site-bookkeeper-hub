@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Apermo\SiteMonitorHub\Model;
+namespace Apermo\SiteBookkeeperHub\Model;
 
 /**
  * DTO representing an incoming site health report.
