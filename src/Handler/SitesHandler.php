@@ -7,6 +7,7 @@ namespace Apermo\SiteBookkeeperHub\Handler;
 use Apermo\SiteBookkeeperHub\Auth\ClientAuth;
 use Apermo\SiteBookkeeperHub\JsonResponse;
 use Apermo\SiteBookkeeperHub\Model\Site;
+use Apermo\SiteBookkeeperHub\Storage\CategoryRepository;
 use Apermo\SiteBookkeeperHub\Storage\SiteRepository;
 
 /**
@@ -36,16 +37,30 @@ class SitesHandler {
 	private int $staleHours;
 
 	/**
+	 * Category repository.
+	 *
+	 * @var CategoryRepository
+	 */
+	private ?CategoryRepository $categoryRepo;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param SiteRepository $repo       Repository.
-	 * @param ClientAuth     $auth       Client authenticator.
-	 * @param int            $staleHours Stale threshold in hours.
+	 * @param SiteRepository     $repo         Repository.
+	 * @param ClientAuth         $auth         Client authenticator.
+	 * @param int                $staleHours   Stale threshold in hours.
+	 * @param CategoryRepository $category_repo Category repository.
 	 */
-	public function __construct( SiteRepository $repo, ClientAuth $auth, int $staleHours = 48 ) {
+	public function __construct(
+		SiteRepository $repo,
+		ClientAuth $auth,
+		int $staleHours = 48,
+		?CategoryRepository $category_repo = null,
+	) {
 		$this->repo = $repo;
 		$this->auth = $auth;
 		$this->staleHours = $staleHours;
+		$this->categoryRepo = $category_repo;
 	}
 
 	/**
@@ -66,10 +81,11 @@ class SitesHandler {
 
 		$sites = $this->repo->getAllSites();
 		$staleThreshold = \time() - ( $this->staleHours * 3600 );
+		$categories = $this->loadCategories();
 		$result = [];
 
 		foreach ( $sites as $site ) {
-			$result[] = $this->buildSiteSummary( $site, $staleThreshold );
+			$result[] = $this->buildSiteSummary( $site, $staleThreshold, $categories );
 		}
 
 		JsonResponse::send( [ 'sites' => $result ] );
@@ -83,7 +99,34 @@ class SitesHandler {
 	 *
 	 * @return array<string, mixed>
 	 */
-	private function buildSiteSummary( Site $site, int $staleThreshold ): array {
+	/**
+	 * Load all categories indexed by ID.
+	 *
+	 * @return array<string, array<string, mixed>>
+	 */
+	private function loadCategories(): array {
+		if ( $this->categoryRepo === null ) {
+			return [];
+		}
+
+		$result = [];
+		foreach ( $this->categoryRepo->getAll() as $category ) {
+			$result[ $category['id'] ] = $category;
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Build a summary array for a single site.
+	 *
+	 * @param Site                                $site           Site entity.
+	 * @param int                                 $staleThreshold Unix timestamp threshold.
+	 * @param array<string, array<string, mixed>> $categories     Categories indexed by ID.
+	 *
+	 * @return array<string, mixed>
+	 */
+	private function buildSiteSummary( Site $site, int $staleThreshold, array $categories = [] ): array {
 		$report = $this->repo->getReport( $site->id );
 		$plugins = $this->repo->getPlugins( $site->id );
 		$themes = $this->repo->getThemes( $site->id );
@@ -105,12 +148,27 @@ class SitesHandler {
 		$lastSeen = $report['last_updated'] ?? $site->updatedAt;
 		$isStale = \strtotime( $lastSeen ) < $staleThreshold;
 
-		// phpcs:ignore Apermo.DataStructures.ArrayComplexity.TooManyKeysError -- API contract requires 12 keys.
+		$category = null;
+		$overdue = false;
+		if ( $site->categoryId !== null && isset( $categories[ $site->categoryId ] ) ) {
+			$category = [
+				'id'           => $categories[ $site->categoryId ]['id'],
+				'name'         => $categories[ $site->categoryId ]['name'],
+				'slug'         => $categories[ $site->categoryId ]['slug'],
+				'overdue_hours' => (int) $categories[ $site->categoryId ]['overdue_hours'],
+			];
+			$overdue_threshold = \time() - ( $category['overdue_hours'] * 3600 );
+			$overdue = ( $pendingPlugins + $pendingThemes ) > 0
+				&& \strtotime( $lastSeen ) < $overdue_threshold;
+		}
+
+		// phpcs:ignore Apermo.DataStructures.ArrayComplexity.TooManyKeysError -- API contract.
 		return [
 			'id' => $site->id,
 			'site_url' => $site->siteUrl,
 			'label' => $site->label,
 			'network_id' => $site->networkId,
+			'category' => $category,
 			'environment_type' => $report['environment_type'] ?? null,
 			'wp_version' => $report['wp_version'] ?? null,
 			'wp_update_available' => $report['wp_update_available'] ?? null,
@@ -120,6 +178,8 @@ class SitesHandler {
 			'last_updated' => $report['last_updated'] ?? null,
 			'last_seen' => $lastSeen,
 			'stale' => $isStale,
+			'overdue' => $overdue,
+			'notes_hash' => $site->notesHash(),
 		];
 	}
 }

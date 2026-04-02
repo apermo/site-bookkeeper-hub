@@ -43,6 +43,30 @@ class Router {
 	}
 
 	/**
+	 * Register a PATCH route.
+	 *
+	 * @param string   $pattern  Route pattern.
+	 * @param callable $handler  Handler callback.
+	 *
+	 * @return void
+	 */
+	public function patch( string $pattern, callable $handler ): void {
+		$this->routes['PATCH'][ $pattern ] = $handler;
+	}
+
+	/**
+	 * Register a PUT route.
+	 *
+	 * @param string   $pattern  Route pattern.
+	 * @param callable $handler  Handler callback.
+	 *
+	 * @return void
+	 */
+	public function put( string $pattern, callable $handler ): void {
+		$this->routes['PUT'][ $pattern ] = $handler;
+	}
+
+	/**
 	 * Register a DELETE route.
 	 *
 	 * @param string   $pattern  Route pattern.

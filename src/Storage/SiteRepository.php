@@ -118,6 +118,29 @@ class SiteRepository {
 	 *
 	 * @return void
 	 */
+	/**
+	 * Update a site's category and/or notes.
+	 *
+	 * @param string      $site_id     Site UUID.
+	 * @param string|null $category_id Category UUID or null.
+	 * @param string|null $notes       Notes content or null.
+	 *
+	 * @return void
+	 */
+	public function updateSiteMeta( string $site_id, ?string $category_id, ?string $notes ): void {
+		$stmt = $this->database->pdo()->prepare(
+			'UPDATE sites SET category_id = :category_id, notes = :notes, updated_at = :now WHERE id = :id',
+		);
+		$stmt->execute(
+			[
+				':id'          => $site_id,
+				':category_id' => $category_id,
+				':notes'       => $notes,
+				':now'         => \gmdate( 'c' ),
+			],
+		);
+	}
+
 	public function deleteSite( string $site_id ): void {
 		$pdo = $this->database->pdo();
 		$tables = [

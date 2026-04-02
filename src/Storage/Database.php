@@ -75,9 +75,11 @@ class Database {
 			$this->createVulnerabilitiesTable();
 			$this->createVulnerabilitySyncTable();
 			$this->createVulnerabilitySlugSyncTable();
+			$this->createSiteCategoriesTable();
 			$this->migrateSitesAddNetworkId();
 			$this->migrateSitePluginsAddNetworkActive();
 			$this->migrateReportsAddEnvironmentType();
+			$this->migrateSitesAddCategoryAndNotes();
 
 			$this->connection->commit();
 		} catch ( Throwable $exception ) {
@@ -437,6 +439,45 @@ class Database {
 			// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch -- Expected when column already exists.
 		} catch ( Throwable $exception ) {
 			// Column already exists — safe to ignore.
+		}
+	}
+
+	/**
+	 * Create the site_categories table.
+	 *
+	 * @return void
+	 */
+	private function createSiteCategoriesTable(): void {
+		$this->connection->exec(
+			'CREATE TABLE IF NOT EXISTS site_categories (
+				id TEXT PRIMARY KEY,
+				name TEXT NOT NULL,
+				slug TEXT NOT NULL UNIQUE,
+				sort_order INTEGER NOT NULL DEFAULT 0,
+				overdue_hours INTEGER NOT NULL DEFAULT 48,
+				created_at TEXT NOT NULL
+			)',
+		);
+	}
+
+	/**
+	 * Add category_id and notes columns to sites table.
+	 *
+	 * @return void
+	 */
+	private function migrateSitesAddCategoryAndNotes(): void {
+		$columns = [
+			'category_id TEXT REFERENCES site_categories(id)',
+			'notes TEXT',
+		];
+
+		foreach ( $columns as $column ) {
+			try {
+				$this->connection->exec( "ALTER TABLE sites ADD COLUMN {$column}" );
+				// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch -- Expected when column already exists.
+			} catch ( Throwable $exception ) {
+				// Column already exists — safe to ignore.
+			}
 		}
 	}
 }
