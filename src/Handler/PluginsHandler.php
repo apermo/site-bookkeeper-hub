@@ -39,6 +39,41 @@ class PluginsHandler {
 	}
 
 	/**
+	 * Group flat plugin rows by slug with nested sites array.
+	 *
+	 * @param array<int, array<string, mixed>> $rows Flat rows.
+	 *
+	 * @return array<int, array<string, mixed>>
+	 */
+	private static function groupBySlug( array $rows ): array {
+		$grouped = [];
+
+		foreach ( $rows as $row ) {
+			$slug = $row['slug'];
+			if ( ! isset( $grouped[ $slug ] ) ) {
+				$grouped[ $slug ] = [
+					'slug' => $slug,
+					'name' => $row['name'],
+					'sites' => [],
+				];
+			}
+
+			// phpcs:ignore Apermo.DataStructures.ArrayComplexity.TooManyKeysError -- API contract requires 7 keys.
+			$grouped[ $slug ]['sites'][] = [
+				'site_id' => $row['site_id'],
+				'site_url' => $row['site_url'],
+				'version' => $row['version'],
+				'update_available' => $row['update_available'],
+				'active' => $row['active'],
+				'network_active' => $row['network_active'] ?? 0,
+				'last_updated' => $row['last_updated'],
+			];
+		}
+
+		return \array_values( $grouped );
+	}
+
+	/**
 	 * Handle the GET /plugins request.
 	 *
 	 * @param array<string, string> $params Route parameters (unused).
@@ -60,38 +95,5 @@ class PluginsHandler {
 		$rows = $this->repo->getAllPlugins( $slug, $outdated );
 
 		JsonResponse::send( [ 'plugins' => self::groupBySlug( $rows ) ] );
-	}
-
-	/**
-	 * Group flat plugin rows by slug with nested sites array.
-	 *
-	 * @param array<int, array<string, mixed>> $rows Flat rows.
-	 *
-	 * @return array<int, array<string, mixed>>
-	 */
-	private static function groupBySlug( array $rows ): array {
-		$grouped = [];
-
-		foreach ( $rows as $row ) {
-			$slug = $row['slug'];
-			if ( ! isset( $grouped[ $slug ] ) ) {
-				$grouped[ $slug ] = [
-					'slug' => $slug,
-					'name' => $row['name'],
-					'sites' => [],
-				];
-			}
-
-			$grouped[ $slug ]['sites'][] = [
-				'site_id' => $row['site_id'],
-				'site_url' => $row['site_url'],
-				'version' => $row['version'],
-				'update_available' => $row['update_available'],
-				'active' => $row['active'],
-				'last_updated' => $row['last_updated'],
-			];
-		}
-
-		return \array_values( $grouped );
 	}
 }

@@ -63,6 +63,10 @@
 					"active": {
 						"type": "boolean",
 						"description": "Whether the plugin is active."
+					},
+					"network_active": {
+						"type": "boolean",
+						"description": "Whether the plugin is network-activated (Multisite only)."
 					}
 				},
 				"additionalProperties": true

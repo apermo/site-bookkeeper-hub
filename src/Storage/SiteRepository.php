@@ -516,8 +516,8 @@ class SiteRepository {
 		$stmt->execute( [ ':site_id' => $siteId ] );
 
 		$stmt = $conn->prepare(
-			'INSERT INTO site_plugins (site_id, slug, name, version, update_available, active, last_updated)
-			 VALUES (:site_id, :slug, :name, :version, :update_available, :active, :last_updated)',
+			'INSERT INTO site_plugins (site_id, slug, name, version, update_available, active, network_active, last_updated)
+			 VALUES (:site_id, :slug, :name, :version, :update_available, :active, :network_active, :last_updated)',
 		);
 
 		foreach ( $plugins as $plugin ) {
@@ -529,6 +529,7 @@ class SiteRepository {
 					':version' => $plugin['version'] ?? '',
 					':update_available' => $plugin['update_available'] ?? null,
 					':active' => (int) ( $plugin['active'] ?? 1 ),
+					':network_active' => (int) ( $plugin['network_active'] ?? 0 ),
 					':last_updated' => $timestamp,
 				],
 			);
