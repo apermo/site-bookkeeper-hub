@@ -23,6 +23,7 @@ use Apermo\SiteBookkeeperHub\Storage\Database;
 use Apermo\SiteBookkeeperHub\Storage\NetworkRepository;
 use Apermo\SiteBookkeeperHub\Storage\SiteRepository;
 use Apermo\SiteBookkeeperHub\Vulnerability\VulnerabilityManager;
+use Apermo\SiteBookkeeperHub\Vulnerability\VulnerabilityProvider;
 use Apermo\SiteBookkeeperHub\Vulnerability\VulnerabilityRepository;
 use Apermo\SiteBookkeeperHub\Vulnerability\WordfenceProvider;
 use Apermo\SiteBookkeeperHub\Vulnerability\WPScanProvider;
