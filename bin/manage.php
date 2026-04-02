@@ -3,10 +3,13 @@
  * CLI management tool for Site Bookkeeper Hub.
  *
  * Commands:
- *   site:add <url> [--label=<label>]    Register a new site
- *   site:list                           List all registered sites
- *   site:rotate-token <url>             Rotate a site's bearer token
- *   client:add [--label=<label>]        Create a new client read token
+ *   site:add <url> [--label=<label>]       Register a new site
+ *   site:list                              List all registered sites
+ *   site:rotate-token <url>                Rotate a site's bearer token
+ *   client:add [--label=<label>]           Create a new client read token
+ *   network:add <url> [--label=<label>]    Register a new network
+ *   network:list                           List all registered networks
+ *   network:rotate-token <url>             Rotate a network's bearer token
  *
  * @phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_error_log
  */
@@ -16,6 +19,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Apermo\SiteBookkeeperHub\Storage\Database;
+use Apermo\SiteBookkeeperHub\Storage\NetworkRepository;
 use Apermo\SiteBookkeeperHub\Storage\SiteRepository;
 
 // Load .env if it exists.
@@ -35,6 +39,7 @@ $database_path = getenv( 'DATABASE_PATH' ) ?: __DIR__ . '/../data/monitor.sqlite
 $database = new Database( $database_path );
 $database->migrate();
 $repo = new SiteRepository( $database );
+$network_repo = new NetworkRepository( $database );
 
 $command = $argv[1] ?? '';
 
@@ -51,6 +56,15 @@ switch ( $command ) {
 	case 'client:add':
 		handle_client_add( $repo, array_slice( $argv, 2 ) );
 		break;
+	case 'network:add':
+		handle_network_add( $network_repo, array_slice( $argv, 2 ) );
+		break;
+	case 'network:list':
+		handle_network_list( $network_repo );
+		break;
+	case 'network:rotate-token':
+		handle_network_rotate_token( $network_repo, array_slice( $argv, 2 ) );
+		break;
 	default:
 		fwrite( STDERR, "Usage: php bin/manage.php <command>\n\n" );
 		fwrite( STDERR, "Commands:\n" );
@@ -58,6 +72,9 @@ switch ( $command ) {
 		fwrite( STDERR, "  site:list\n" );
 		fwrite( STDERR, "  site:rotate-token <url>\n" );
 		fwrite( STDERR, "  client:add [--label=<label>]\n" );
+		fwrite( STDERR, "  network:add <url> [--label=<label>]\n" );
+		fwrite( STDERR, "  network:list\n" );
+		fwrite( STDERR, "  network:rotate-token <url>\n" );
 		exit( 1 );
 }
 
@@ -193,6 +210,110 @@ function handle_client_add( SiteRepository $repo, array $arguments ): void {
 		echo "Label: {$label}\n";
 	}
 	echo "\nBearer token (save this — it cannot be retrieved later):\n";
+	echo "{$token}\n";
+}
+
+/**
+ * Register a new network.
+ *
+ * @param NetworkRepository  $repo      Network repository.
+ * @param array<int, string> $arguments CLI arguments.
+ *
+ * @return void
+ */
+function handle_network_add( NetworkRepository $repo, array $arguments ): void {
+	$url = '';
+	$label = null;
+
+	foreach ( $arguments as $argument ) {
+		if ( str_starts_with( $argument, '--label=' ) ) {
+			$label = substr( $argument, 8 );
+		} elseif ( $url === '' ) {
+			$url = $argument;
+		}
+	}
+
+	if ( $url === '' ) {
+		fwrite( STDERR, "Error: URL is required.\n" );
+		fwrite( STDERR, "Usage: php bin/manage.php network:add <url> [--label=<label>]\n" );
+		exit( 1 );
+	}
+
+	$existing = $repo->findNetworkByMainSiteUrl( $url );
+	if ( $existing !== null ) {
+		fwrite( STDERR, "Error: Network '{$url}' already exists.\n" );
+		exit( 1 );
+	}
+
+	$token = bin2hex( random_bytes( 32 ) );
+	$hash = password_hash( $token, PASSWORD_ARGON2ID );
+	$uuid = generate_uuid();
+
+	$repo->addNetwork( $uuid, $url, $hash, $label );
+
+	echo "Network registered successfully.\n";
+	echo "ID:    {$uuid}\n";
+	echo "URL:   {$url}\n";
+	if ( $label !== null ) {
+		echo "Label: {$label}\n";
+	}
+	echo "\nBearer token (save this — it cannot be retrieved later):\n";
+	echo "{$token}\n";
+}
+
+/**
+ * List all registered networks.
+ *
+ * @param NetworkRepository $repo Network repository.
+ *
+ * @return void
+ */
+function handle_network_list( NetworkRepository $repo ): void {
+	$networks = $repo->getAllNetworks();
+
+	if ( $networks === [] ) {
+		echo "No networks registered.\n";
+		return;
+	}
+
+	foreach ( $networks as $network ) {
+		$label = $network->label !== null ? " ({$network->label})" : '';
+		echo "{$network->id}  {$network->mainSiteUrl}{$label}\n";
+	}
+
+	echo "\nTotal: " . count( $networks ) . " network(s)\n";
+}
+
+/**
+ * Rotate a network's bearer token.
+ *
+ * @param NetworkRepository  $repo      Network repository.
+ * @param array<int, string> $arguments CLI arguments.
+ *
+ * @return void
+ */
+function handle_network_rotate_token( NetworkRepository $repo, array $arguments ): void {
+	$url = $arguments[0] ?? '';
+
+	if ( $url === '' ) {
+		fwrite( STDERR, "Error: URL is required.\n" );
+		fwrite( STDERR, "Usage: php bin/manage.php network:rotate-token <url>\n" );
+		exit( 1 );
+	}
+
+	$network = $repo->findNetworkByMainSiteUrl( $url );
+	if ( $network === null ) {
+		fwrite( STDERR, "Error: Network '{$url}' not found.\n" );
+		exit( 1 );
+	}
+
+	$token = bin2hex( random_bytes( 32 ) );
+	$hash = password_hash( $token, PASSWORD_ARGON2ID );
+
+	$repo->updateNetworkTokenHash( $network->id, $hash );
+
+	echo "Token rotated for {$url}.\n";
+	echo "\nNew bearer token (save this — it cannot be retrieved later):\n";
 	echo "{$token}\n";
 }
 
