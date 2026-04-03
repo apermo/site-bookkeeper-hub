@@ -68,7 +68,7 @@ class SitePatchHandler {
 
 		// Conflict detection for notes.
 		if ( \array_key_exists( 'notes', $data ) && isset( $data['notes_hash'] ) ) {
-			$current_hash = $site->notesHash();
+			$current_hash = (string) ( $site->notesHash() ?? '' );
 			$sent_hash = (string) $data['notes_hash'];
 
 			if ( $current_hash !== $sent_hash ) {
