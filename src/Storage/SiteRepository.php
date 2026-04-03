@@ -141,6 +141,13 @@ class SiteRepository {
 		);
 	}
 
+	/**
+	 * Delete a site and all its related data.
+	 *
+	 * @param string $site_id Site UUID.
+	 *
+	 * @return void
+	 */
 	public function deleteSite( string $site_id ): void {
 		$pdo = $this->database->pdo();
 		$tables = [
@@ -613,11 +620,14 @@ class SiteRepository {
 		$stmt->execute( [ ':site_id' => $siteId ] );
 
 		$stmt = $conn->prepare(
-			'INSERT INTO site_plugins (site_id, slug, name, version, update_available, active, network_active, last_updated)
-			 VALUES (:site_id, :slug, :name, :version, :update_available, :active, :network_active, :last_updated)',
+			'INSERT INTO site_plugins
+				(site_id, slug, name, version, update_available, active, network_active, last_updated, update_available_since, update_available_since_source)
+			VALUES
+				(:site_id, :slug, :name, :version, :update_available, :active, :network_active, :last_updated, :update_available_since, :update_available_since_source)',
 		);
 
 		foreach ( $plugins as $plugin ) {
+			// phpcs:ignore Apermo.DataStructures.ArrayComplexity.TooManyKeysError -- Maps to DB columns.
 			$stmt->execute(
 				[
 					':site_id' => $siteId,
@@ -628,6 +638,8 @@ class SiteRepository {
 					':active' => (int) ( $plugin['active'] ?? 1 ),
 					':network_active' => (int) ( $plugin['network_active'] ?? 0 ),
 					':last_updated' => $timestamp,
+					':update_available_since' => $plugin['update_available_since'] ?? null,
+					':update_available_since_source' => $plugin['update_available_since_source'] ?? null,
 				],
 			);
 		}
@@ -649,8 +661,10 @@ class SiteRepository {
 		$stmt->execute( [ ':site_id' => $siteId ] );
 
 		$stmt = $conn->prepare(
-			'INSERT INTO site_themes (site_id, slug, name, version, update_available, active, last_updated)
-			 VALUES (:site_id, :slug, :name, :version, :update_available, :active, :last_updated)',
+			'INSERT INTO site_themes
+				(site_id, slug, name, version, update_available, active, last_updated, update_available_since, update_available_since_source)
+			VALUES
+				(:site_id, :slug, :name, :version, :update_available, :active, :last_updated, :update_available_since, :update_available_since_source)',
 		);
 
 		foreach ( $themes as $theme ) {
@@ -663,6 +677,8 @@ class SiteRepository {
 					':update_available' => $theme['update_available'] ?? null,
 					':active' => (int) ( $theme['active'] ?? 0 ),
 					':last_updated' => $timestamp,
+					':update_available_since' => $theme['update_available_since'] ?? null,
+					':update_available_since_source' => $theme['update_available_since_source'] ?? null,
 				],
 			);
 		}

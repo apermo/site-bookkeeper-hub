@@ -71,6 +71,15 @@
 					"network_active": {
 						"type": "boolean",
 						"description": "Whether the plugin is network-activated (Multisite only)."
+					},
+					"update_available_since": {
+						"type": ["string", "null"],
+						"description": "ISO 8601 date when the update first became available."
+					},
+					"update_available_since_source": {
+						"type": ["string", "null"],
+						"enum": ["release_date", "first_seen", null],
+						"description": "Source of the update_available_since date."
 					}
 				},
 				"additionalProperties": true

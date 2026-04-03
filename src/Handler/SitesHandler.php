@@ -92,14 +92,6 @@ class SitesHandler {
 	}
 
 	/**
-	 * Build a summary array for a single site.
-	 *
-	 * @param Site $site           Site entity.
-	 * @param int  $staleThreshold Unix timestamp threshold.
-	 *
-	 * @return array<string, mixed>
-	 */
-	/**
 	 * Load all categories indexed by ID.
 	 *
 	 * @return array<string, array<string, mixed>>
@@ -157,9 +149,8 @@ class SitesHandler {
 				'slug'         => $categories[ $site->categoryId ]['slug'],
 				'overdue_hours' => (int) $categories[ $site->categoryId ]['overdue_hours'],
 			];
-			$overdue_threshold = \time() - ( $category['overdue_hours'] * 3600 );
-			$overdue = ( $pendingPlugins + $pendingThemes ) > 0
-				&& \strtotime( $lastSeen ) < $overdue_threshold;
+			$overdue = $this->hasOverdueUpdates( $plugins, $category['overdue_hours'] )
+				|| $this->hasOverdueUpdates( $themes, $category['overdue_hours'] );
 		}
 
 		// phpcs:ignore Apermo.DataStructures.ArrayComplexity.TooManyKeysError -- API contract.
@@ -181,5 +172,33 @@ class SitesHandler {
 			'overdue' => $overdue,
 			'notes_hash' => $site->notesHash(),
 		];
+	}
+
+	/**
+	 * Check if any item has an overdue update based on update_available_since.
+	 *
+	 * @param array<int, array<string, mixed>> $items         Plugin or theme rows.
+	 * @param int                              $overdue_hours Category threshold.
+	 *
+	 * @return bool
+	 */
+	private function hasOverdueUpdates( array $items, int $overdue_hours ): bool {
+		$threshold = \time() - ( $overdue_hours * 3600 );
+
+		foreach ( $items as $item ) {
+			$update = $item['update_available'] ?? '';
+			$since = $item['update_available_since'] ?? null;
+
+			if ( $update === '' || $update === null || $since === null ) {
+				continue;
+			}
+
+			$since_time = \strtotime( $since );
+			if ( $since_time !== false && $since_time < $threshold ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

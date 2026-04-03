@@ -80,6 +80,8 @@ class Database {
 			$this->migrateSitePluginsAddNetworkActive();
 			$this->migrateReportsAddEnvironmentType();
 			$this->migrateSitesAddCategoryAndNotes();
+			$this->migratePluginsAddUpdateAvailableSince();
+			$this->migrateThemesAddUpdateAvailableSince();
 
 			$this->connection->commit();
 		} catch ( Throwable $exception ) {
@@ -474,6 +476,48 @@ class Database {
 		foreach ( $columns as $column ) {
 			try {
 				$this->connection->exec( "ALTER TABLE sites ADD COLUMN {$column}" );
+				// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch -- Expected when column already exists.
+			} catch ( Throwable $exception ) {
+				// Column already exists — safe to ignore.
+			}
+		}
+	}
+
+	/**
+	 * Add update_available_since columns to site_plugins.
+	 *
+	 * @return void
+	 */
+	private function migratePluginsAddUpdateAvailableSince(): void {
+		$columns = [
+			'update_available_since TEXT',
+			'update_available_since_source TEXT',
+		];
+
+		foreach ( $columns as $column ) {
+			try {
+				$this->connection->exec( "ALTER TABLE site_plugins ADD COLUMN {$column}" );
+				// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch -- Expected when column already exists.
+			} catch ( Throwable $exception ) {
+				// Column already exists — safe to ignore.
+			}
+		}
+	}
+
+	/**
+	 * Add update_available_since columns to site_themes.
+	 *
+	 * @return void
+	 */
+	private function migrateThemesAddUpdateAvailableSince(): void {
+		$columns = [
+			'update_available_since TEXT',
+			'update_available_since_source TEXT',
+		];
+
+		foreach ( $columns as $column ) {
+			try {
+				$this->connection->exec( "ALTER TABLE site_themes ADD COLUMN {$column}" );
 				// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch -- Expected when column already exists.
 			} catch ( Throwable $exception ) {
 				// Column already exists — safe to ignore.
